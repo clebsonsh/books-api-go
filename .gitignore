@@ -19,3 +19,8 @@
 
 # Go workspace file
 go.work
+
+# Ignore .env file containing sensitive information
+.env
+.env.local
+.env.development
