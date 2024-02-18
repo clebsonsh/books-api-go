@@ -15,7 +15,7 @@ import (
 var db *sql.DB
 
 func init() {
-	logEnv()
+	loadEnv()
 
 	cfg := mysql.Config{
 		User:                 os.Getenv("DB_USERNAME"),
@@ -70,8 +70,7 @@ func main() {
 	fmt.Println(authors)
 }
 
-func logEnv() {
-	// Load environment variables from .env file.
+func loadEnv() {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Error loading .env file")
