@@ -1,5 +1,4 @@
--- migrate:up
-CREATE TABLE books (
+CREATE TABLE IF NOT EXISTS books (
     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
     title text NOT NULL UNIQUE,
     author_id BIGINT NOT NULL,
@@ -7,6 +6,3 @@ CREATE TABLE books (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (author_id) REFERENCES authors(id) ON DELETE CASCADE
 );
-
--- migrate:down
-DROP TABLE books;
