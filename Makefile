@@ -4,8 +4,14 @@ build:
 run: build
 	@./bin/main
 
-migrate:
-	@go run scripts/migrate.go
+migrate.fresh.seed: build
+	@./bin/main migrate:fresh:seed
 
-migrate.fresh: 
-	@go run scripts/migrate.go fresh
+migrate.fresh: build
+	@./bin/main migrate:fresh
+
+migrate: build
+	@./bin/main migrate
+
+seed: build
+	@./bin/main seed
