@@ -20,13 +20,7 @@ func init() {
 }
 
 func main() {
-	var shouldRefreshDatabase bool
-
-	if len(os.Args) > 1 {
-		shouldRefreshDatabase = os.Args[1] == "fresh"
-	}
-
-	if shouldRefreshDatabase {
+	if len(os.Args) > 1 && os.Args[1] == "fresh" {
 		refreshDatabase()
 	}
 
