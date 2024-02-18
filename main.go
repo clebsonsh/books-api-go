@@ -1,11 +1,13 @@
 package main
 
 import (
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
 
+	"github.com/clebsonsh/books-api-go/sqlc"
 	"github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
 )
@@ -15,7 +17,6 @@ var db *sql.DB
 func init() {
 	logEnv()
 
-	// Capture connection properties.
 	cfg := mysql.Config{
 		User:                 os.Getenv("DB_USERNAME"),
 		Passwd:               os.Getenv("DB_PASSWORD"),
@@ -23,8 +24,8 @@ func init() {
 		Addr:                 os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
 		DBName:               os.Getenv("DB_DATABASE"),
 		AllowNativePasswords: true,
+		ParseTime:            true,
 	}
-	// Get a database handle.
 	var err error
 	db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
@@ -35,11 +36,38 @@ func init() {
 	if pingErr != nil {
 		log.Fatal(pingErr)
 	}
-	defer db.Close()
 	fmt.Println("Connected!")
 }
 
 func main() {
+	ctx := context.Background()
+	queries := sqlc.New(db)
+
+	author := sqlc.CreateAuthorParams{
+		Name: "Clebson Moura",
+		Bio:  sql.NullString{String: "Software Engineer", Valid: true},
+	}
+
+	authorFound, err := queries.AuthorExists(ctx, author.Name)
+
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	if !authorFound {
+		err = queries.CreateAuthor(ctx, author)
+
+		if err != nil {
+			fmt.Print(err)
+		}
+	}
+
+	authors, err := queries.GetAuthors(ctx)
+	if err != nil {
+		fmt.Print(err)
+	}
+
+	fmt.Println(authors)
 }
 
 func logEnv() {
