@@ -1,42 +1,11 @@
 package main
 
 import (
-	"context"
-	"database/sql"
-	"fmt"
-	"log"
-	"os"
-
-	"github.com/clebsonsh/books-api-go/sqlc"
-	"github.com/go-sql-driver/mysql"
-	"github.com/joho/godotenv"
+	"github.com/clebsonsh/books-api-go/utils"
 )
 
-var db *sql.DB
-
 func init() {
-	loadEnv()
-
-	cfg := mysql.Config{
-		User:                 os.Getenv("DB_USERNAME"),
-		Passwd:               os.Getenv("DB_PASSWORD"),
-		Net:                  "tcp",
-		Addr:                 os.Getenv("DB_HOST") + ":" + os.Getenv("DB_PORT"),
-		DBName:               os.Getenv("DB_DATABASE"),
-		AllowNativePasswords: true,
-		ParseTime:            true,
-	}
-	var err error
-	db, err = sql.Open("mysql", cfg.FormatDSN())
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	pingErr := db.Ping()
-	if pingErr != nil {
-		log.Fatal(pingErr)
-	}
-	fmt.Println("Connected!")
+	utils.LoadEnv()
 }
 
 func main() {
@@ -68,11 +37,5 @@ func main() {
 	}
 
 	fmt.Println(authors)
-}
 
-func loadEnv() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
 }
