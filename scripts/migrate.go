@@ -1,7 +1,6 @@
-package main
+package scripts
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"os"
@@ -10,17 +9,13 @@ import (
 	"github.com/clebsonsh/books-api-go/utils"
 )
 
-var db *sql.DB
-
-func init() {
+func Migrate(fresh bool) {
 	utils.LoadEnv()
 	database.Init()
-	db = database.Db
-	createMigrationsTable()
-}
 
-func main() {
-	if len(os.Args) > 1 && os.Args[1] == "fresh" {
+	createMigrationsTable()
+
+	if fresh {
 		refreshDatabase()
 	}
 
@@ -41,7 +36,7 @@ func main() {
 
 		fmt.Println("Migrating: ", file.Name())
 
-		_, err := db.Exec(string(sqlFile))
+		_, err := database.Db.Exec(string(sqlFile))
 		if err != nil {
 			panic(err)
 		}
@@ -56,7 +51,7 @@ func main() {
 func migrationAlreadyExecuted(name string) bool {
 	var count int
 
-	err := db.QueryRow("SELECT COUNT(*) FROM migrations WHERE name = ?", name).Scan(&count)
+	err := database.Db.QueryRow("SELECT COUNT(*) FROM migrations WHERE name = ?", name).Scan(&count)
 	if err != nil {
 		panic(err)
 	}
@@ -65,7 +60,7 @@ func migrationAlreadyExecuted(name string) bool {
 }
 
 func saveMigration(name string) {
-	_, err := db.Exec("INSERT INTO migrations (name) VALUES (?)", name)
+	_, err := database.Db.Exec("INSERT INTO migrations (name) VALUES (?)", name)
 	if err != nil {
 		panic(err)
 	}
@@ -79,14 +74,14 @@ func createMigrationsTable() {
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 	)`
 
-	_, err := db.Exec(query)
+	_, err := database.Db.Exec(query)
 	if err != nil {
 		panic(err)
 	}
 }
 
 func refreshDatabase() {
-	db_tables, dropErr := db.Query("SHOW TABLES")
+	db_tables, dropErr := database.Db.Query("SHOW TABLES")
 	if dropErr != nil {
 		panic(dropErr)
 	}
@@ -100,7 +95,7 @@ func refreshDatabase() {
 	}
 
 	for i := len(tables); i > 0; i-- {
-		_, dropErr := db.Exec("DROP TABLE " + tables[i-1])
+		_, dropErr := database.Db.Exec("DROP TABLE " + tables[i-1])
 		if dropErr != nil {
 			panic(dropErr)
 		}
