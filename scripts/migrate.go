@@ -28,8 +28,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	for _, file := range files {
 
+	for _, file := range files {
 		if migrationAlreadyExecuted(file.Name()) {
 			continue
 		}
@@ -42,7 +42,6 @@ func main() {
 		fmt.Println("Migrating: ", file.Name())
 
 		_, err := db.Exec(string(sqlFile))
-
 		if err != nil {
 			panic(err)
 		}
@@ -61,6 +60,7 @@ func migrationAlreadyExecuted(name string) bool {
 	if err != nil {
 		panic(err)
 	}
+
 	return count > 0
 }
 
@@ -78,8 +78,8 @@ func createMigrationsTable() {
 		created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 	)`
-	_, err := db.Exec(query)
 
+	_, err := db.Exec(query)
 	if err != nil {
 		panic(err)
 	}

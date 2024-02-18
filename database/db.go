@@ -10,6 +10,8 @@ import (
 var Db *sql.DB
 
 func Init() {
+	var err error
+
 	cfg := mysql.Config{
 		User:                 os.Getenv("DB_USERNAME"),
 		Passwd:               os.Getenv("DB_PASSWORD"),
@@ -19,7 +21,7 @@ func Init() {
 		AllowNativePasswords: true,
 		ParseTime:            true,
 	}
-	var err error
+
 	Db, err = sql.Open("mysql", cfg.FormatDSN())
 	if err != nil {
 		panic(err)
