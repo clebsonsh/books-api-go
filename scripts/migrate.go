@@ -77,24 +77,21 @@ func createMigrationsTable() {
 }
 
 func refreshDatabase() {
-	db_tables, dropErr := database.Db.Query("SHOW TABLES")
-	if dropErr != nil {
-		panic(dropErr)
+	var err error
+
+	_, err = database.Db.Exec(`DROP DATABASE IF EXISTS ` + os.Getenv("DB_DATABASE"))
+	if err != nil {
+		panic(err)
 	}
 
-	var tables []string
-
-	for db_tables.Next() {
-		var table string
-		db_tables.Scan(&table)
-		tables = append(tables, table)
+	_, err = database.Db.Exec(`CREATE DATABASE ` + os.Getenv("DB_DATABASE"))
+	if err != nil {
+		panic(err)
 	}
 
-	for i := len(tables); i > 0; i-- {
-		_, dropErr := database.Db.Exec("DROP TABLE " + tables[i-1])
-		if dropErr != nil {
-			panic(dropErr)
-		}
+	_, err = database.Db.Exec(`USE ` + os.Getenv("DB_DATABASE"))
+	if err != nil {
+		panic(err)
 	}
 
 	createMigrationsTable()
