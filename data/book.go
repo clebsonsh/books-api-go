@@ -19,18 +19,26 @@ type Book struct {
 	AuthorID  int       `json:"author_id"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+type BookWithAuthor struct {
+	ID        int       `json:"id"`
+	Title     string    `json:"title"`
+	AuthorID  int       `json:"author_id"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 	Author    Author    `json:"author"`
 }
 
-func GetBooks() ([]Book, error) {
-	var books []Book
+func GetBooks() ([]BookWithAuthor, error) {
+	var books []BookWithAuthor
 	rows, err := database.Db.Query("SELECT * FROM books")
 	if err != nil {
 		return nil, err
 	}
 
 	for rows.Next() {
-		var book Book
+		var book BookWithAuthor
 		if err := rows.Scan(&book.ID, &book.Title, &book.AuthorID, &book.CreatedAt, &book.UpdatedAt); err != nil {
 			return nil, err
 		}
@@ -48,8 +56,8 @@ func GetBooks() ([]Book, error) {
 	return books, nil
 }
 
-func GetBook(id int) (Book, error) {
-	var book Book
+func GetBook(id int) (BookWithAuthor, error) {
+	var book BookWithAuthor
 	err := database.Db.QueryRow("SELECT * FROM books WHERE id = ?", id).Scan(&book.ID, &book.Title, &book.AuthorID, &book.CreatedAt, &book.UpdatedAt)
 	if err != nil {
 		return book, err
@@ -77,13 +85,6 @@ func GetBooksByAuthor(authorID int) ([]Book, error) {
 		if err := rows.Scan(&book.ID, &book.Title, &book.AuthorID, &book.CreatedAt, &book.UpdatedAt); err != nil {
 			return nil, err
 		}
-
-		author, err := GetAuthor(book.AuthorID)
-		if err != nil {
-			return nil, err
-		}
-
-		book.Author = author
 
 		books = append(books, book)
 	}
