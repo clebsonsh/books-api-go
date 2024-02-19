@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/clebsonsh/books-api-go/data"
 	"github.com/clebsonsh/books-api-go/database"
+	"github.com/clebsonsh/books-api-go/handlers"
 	"github.com/clebsonsh/books-api-go/scripts"
 	"github.com/clebsonsh/books-api-go/utils"
 )
@@ -33,25 +33,12 @@ func init() {
 func main() {
 	serverUriAndPort := os.Getenv("HOST_URI") + ":" + os.Getenv("HOST_PORT")
 	mux := http.NewServeMux()
-	mux.HandleFunc("GET /api/v1/books/", func(w http.ResponseWriter, r *http.Request) {
-		books, err := data.GetBooks()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
 
-		utils.RespondWithJSON(w, books, http.StatusOK)
-	})
+	mux.HandleFunc("GET /api/v1/books/", handlers.GetBooks)
+	mux.HandleFunc("GET /api/v1/books/{id}", handlers.GetBook)
 
-	mux.HandleFunc("GET /api/v1/authors/", func(w http.ResponseWriter, r *http.Request) {
-		authors, err := data.GetAuthors()
-		if err != nil {
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-			return
-		}
-
-		utils.RespondWithJSON(w, authors, http.StatusOK)
-	})
+	mux.HandleFunc("GET /api/v1/authors/", handlers.GetAuthors)
+	mux.HandleFunc("GET /api/v1/authors/{id}", handlers.GetAuthor)
 
 	fmt.Printf("Server running at http://%s\n", serverUriAndPort)
 
