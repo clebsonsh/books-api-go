@@ -6,13 +6,9 @@ import (
 	"os"
 
 	"github.com/clebsonsh/books-api-go/database"
-	"github.com/clebsonsh/books-api-go/utils"
 )
 
 func Seed() {
-	utils.LoadEnv()
-	database.Init()
-
 	createSeedersTable()
 
 	files, err := os.ReadDir("./database/seeders")

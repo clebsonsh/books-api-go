@@ -6,12 +6,14 @@ import (
 	"os"
 
 	"github.com/clebsonsh/books-api-go/data"
+	"github.com/clebsonsh/books-api-go/database"
 	"github.com/clebsonsh/books-api-go/scripts"
 	"github.com/clebsonsh/books-api-go/utils"
 )
 
 func init() {
 	utils.LoadEnv()
+	database.Init()
 
 	if len(os.Args) > 1 {
 		switch os.Args[1] {

@@ -6,13 +6,9 @@ import (
 	"os"
 
 	"github.com/clebsonsh/books-api-go/database"
-	"github.com/clebsonsh/books-api-go/utils"
 )
 
 func Migrate(fresh bool) {
-	utils.LoadEnv()
-	database.Init()
-
 	createMigrationsTable()
 
 	if fresh {
